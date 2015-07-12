@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.format.Time;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,15 +23,22 @@ import java.util.ArrayList;
 /**
  * Created by Adan on 12/07/2015.
  */
-public class dameDatos extends AsyncTask<String, Void, Void> {
+public class dameDatos extends AsyncTask<String, Void, String[]> {
     String cp; // Codigo postal
 
     // Contstructor que asigna codigo postal.
 
     private final String LOG_TAG = dameDatos.class.getSimpleName();
+    private final ArrayAdapter<String> miAdapter;
+
+    public dameDatos(ArrayAdapter<String> miAdapter) {
+        this.miAdapter=miAdapter;
+    }
+
+
 
     @Override
-    protected Void doInBackground(String... params) {
+    protected String[] doInBackground(String... params) {
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
         final String FORECAST_BASE_URL =
@@ -95,6 +103,7 @@ public class dameDatos extends AsyncTask<String, Void, Void> {
             for(int i=0;i<7;i++){
                 Log.d("DREAL",datosTiempoFormateados[i]);
             }
+            return datosTiempoFormateados;
 
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
@@ -118,9 +127,20 @@ public class dameDatos extends AsyncTask<String, Void, Void> {
         return null;
     }
 
+    @Override
+    protected void onPostExecute(String[] result) {
+        if(result!=null && miAdapter!=null) {
+            miAdapter.clear(); // limpia datos del adaptador
+            for (String datosDia : result) {
+                miAdapter.add(datosDia); //añade al adaptador nuevos datos dia a dia
+            }
+            super.onPostExecute(result);
+        }
+    }
+
     /* The date/time conversion code is going to be moved outside the asynctask later,
-     * so for convenience we're breaking it out into its own method now.
-     */
+         * so for convenience we're breaking it out into its own method now.
+         */
     private String getReadableDateString(long time){
         // Because the API returns a unix timestamp (measured in seconds),
         // it must be converted to milliseconds in order to be converted to valid date.

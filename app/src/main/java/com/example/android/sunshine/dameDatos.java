@@ -1,5 +1,6 @@
 package com.example.android.sunshine;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -8,26 +9,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 
 /**
  * Created by Adan on 12/07/2015.
  */
-public class dameDatos extends AsyncTask<Void, Void, Void> {
+public class dameDatos extends AsyncTask<String, Void, Void> {
     String cp; // Codigo postal
 
     // Contstructor que asigna codigo postal.
-    public dameDatos(String cp) {
-        cp=cp;
-    }
 
     private final String LOG_TAG = dameDatos.class.getSimpleName();
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected Void doInBackground(String... params) {
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
+        final String FORECAST_BASE_URL =
+                "http://api.openweathermap.org/data/2.5/forecast/daily?";
+        final String QUERY_PARAM = "q";
+        final String FORMAT_PARAM = "mode";
+        final String UNITS_PARAM = "units";
+        final String DAYS_PARAM = "cnt";
+
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
@@ -38,7 +44,17 @@ public class dameDatos extends AsyncTask<Void, Void, Void> {
             // Construct the URL for the OpenWeatherMap query
             // Possible parameters are avaiable at OWM's forecast API page, at
             // http://openweathermap.org/API#forecast
-            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7");
+            // Creo la URL
+            Uri builtUri = Uri.parse(FORECAST_BASE_URL)
+                    .buildUpon()
+                    // El primer valor que se le pasa en el Execute es el CP
+                    .appendQueryParameter(QUERY_PARAM, params[0])
+                    .appendQueryParameter(FORMAT_PARAM, "json")
+                    .appendQueryParameter(UNITS_PARAM, "metric")
+                    .appendQueryParameter(DAYS_PARAM, Integer.toString(7))
+                    .build();
+            URL url = new URL(builtUri.toString());
+            Log.d("DREAL",url.toString());
 
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -67,6 +83,7 @@ public class dameDatos extends AsyncTask<Void, Void, Void> {
                 return null;
             }
             forecastJsonStr = buffer.toString();
+            Log.d("DREAL",forecastJsonStr);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attemping

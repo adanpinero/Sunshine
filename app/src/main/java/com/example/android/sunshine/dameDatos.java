@@ -1,5 +1,6 @@
 package com.example.android.sunshine;
 
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.format.Time;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 public class dameDatos extends AsyncTask<String, Void, String[]> {
     String cp; // Codigo postal
     String[] misDatosDetalle;
+    private ProgressDialog enProgreso;
 
     // Contstructor que asigna codigo postal.
 
@@ -36,7 +38,14 @@ public class dameDatos extends AsyncTask<String, Void, String[]> {
         this.miAdapter=miAdapter;
     }
 
-
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        enProgreso=new ProgressDialog(miAdapter.getContext());
+        enProgreso.setIndeterminate(true);
+        enProgreso.setMessage("Conecting to Internet");
+        enProgreso.show();
+    }
 
     @Override
     protected String[] doInBackground(String... params) {
@@ -136,6 +145,7 @@ public class dameDatos extends AsyncTask<String, Void, String[]> {
             for (String datosDia : result) {
                 miAdapter.add(datosDia); //anade al adaptador nuevos datos dia a dia
             }
+            enProgreso.dismiss();
             super.onPostExecute(result);
         }
     }

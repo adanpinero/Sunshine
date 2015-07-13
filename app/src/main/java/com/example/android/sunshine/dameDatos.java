@@ -132,7 +132,7 @@ public class dameDatos extends AsyncTask<String, Void, String[]> {
         if(result!=null && miAdapter!=null) {
             miAdapter.clear(); // limpia datos del adaptador
             for (String datosDia : result) {
-                miAdapter.add(datosDia); //añade al adaptador nuevos datos dia a dia
+                miAdapter.add(datosDia); //anade al adaptador nuevos datos dia a dia
             }
             super.onPostExecute(result);
         }

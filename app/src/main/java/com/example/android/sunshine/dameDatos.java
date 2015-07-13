@@ -25,6 +25,7 @@ import java.util.ArrayList;
  */
 public class dameDatos extends AsyncTask<String, Void, String[]> {
     String cp; // Codigo postal
+    String[] misDatosDetalle;
 
     // Contstructor que asigna codigo postal.
 
@@ -131,11 +132,16 @@ public class dameDatos extends AsyncTask<String, Void, String[]> {
     protected void onPostExecute(String[] result) {
         if(result!=null && miAdapter!=null) {
             miAdapter.clear(); // limpia datos del adaptador
+            misDatosDetalle=result;
             for (String datosDia : result) {
                 miAdapter.add(datosDia); //anade al adaptador nuevos datos dia a dia
             }
             super.onPostExecute(result);
         }
+    }
+
+    public String getDatosDetalle(int position){
+        return misDatosDetalle[position];
     }
 
     /* The date/time conversion code is going to be moved outside the asynctask later,

@@ -2,8 +2,10 @@ package com.example.android.sunshine;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.text.format.Time;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -30,6 +32,7 @@ public class dameDatos extends AsyncTask<String, Void, String[]> {
     String[] misDatosDetalle;
     private ProgressDialog enProgreso;
     Context miContext;
+    SharedPreferences preferencias;
 
     // Contstructor que asigna codigo postal.
 
@@ -40,6 +43,8 @@ public class dameDatos extends AsyncTask<String, Void, String[]> {
 
         this.miAdapter=miAdapter;
         this.miContext=miAdapter.getContext();
+        this.preferencias=PreferenceManager.getDefaultSharedPreferences(miContext);
+        this.cp=preferencias.getString("CP","94210");
     }
 
     @Override
@@ -76,7 +81,7 @@ public class dameDatos extends AsyncTask<String, Void, String[]> {
             Uri builtUri = Uri.parse(FORECAST_BASE_URL)
                     .buildUpon()
                     // El primer valor que se le pasa en el Execute es el CP
-                    .appendQueryParameter(QUERY_PARAM, params[0])
+                    .appendQueryParameter(QUERY_PARAM, cp)
                     .appendQueryParameter(FORMAT_PARAM, "json")
                     .appendQueryParameter(UNITS_PARAM, "metric")
                     .appendQueryParameter(DAYS_PARAM, Integer.toString(7))
@@ -256,4 +261,5 @@ public class dameDatos extends AsyncTask<String, Void, String[]> {
         return resultStrs;
 
     }
+
 }

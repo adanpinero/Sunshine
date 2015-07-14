@@ -27,8 +27,8 @@ import java.util.ArrayList;
 /**
  * Created by Adan on 12/07/2015.
  */
-public class dameDatos extends AsyncTask<String, Void, String[]> {
-    String cp; // Codigo postal
+public class dameDatos extends AsyncTask<Void, Void, String[]> {
+
     String[] misDatosDetalle;
     private ProgressDialog enProgreso;
     Context miContext;
@@ -44,7 +44,10 @@ public class dameDatos extends AsyncTask<String, Void, String[]> {
         this.miAdapter=miAdapter;
         this.miContext=miAdapter.getContext();
         this.preferencias=PreferenceManager.getDefaultSharedPreferences(miContext);
-        this.cp=preferencias.getString("CP","94210");
+
+        //todo al iniciar no hay predeterminada una unidad
+        //todo al actualizar el cp funciona en main pero no en detail, hay que volver de detail a main y vuelta a detail para que funcione
+
     }
 
     @Override
@@ -57,7 +60,7 @@ public class dameDatos extends AsyncTask<String, Void, String[]> {
     }
 
     @Override
-    protected String[] doInBackground(String... params) {
+    protected String[] doInBackground(Void... params) {
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
         final String FORECAST_BASE_URL =
@@ -81,9 +84,9 @@ public class dameDatos extends AsyncTask<String, Void, String[]> {
             Uri builtUri = Uri.parse(FORECAST_BASE_URL)
                     .buildUpon()
                     // El primer valor que se le pasa en el Execute es el CP
-                    .appendQueryParameter(QUERY_PARAM, cp)
+                    .appendQueryParameter(QUERY_PARAM, preferencias.getString("CP","99080"))
                     .appendQueryParameter(FORMAT_PARAM, "json")
-                    .appendQueryParameter(UNITS_PARAM, "metric")
+                    .appendQueryParameter(UNITS_PARAM,preferencias.getString("units","metric"))
                     .appendQueryParameter(DAYS_PARAM, Integer.toString(7))
                     .build();
             URL url = new URL(builtUri.toString());
